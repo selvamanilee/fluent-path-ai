@@ -1,7 +1,7 @@
 import { ApiError } from './errors';
 
-/** Database URL: DATABASE_URL (Neon integration) or POSTGRES_URL (Vercel/Supabase integrations). */
-export const databaseUrl = () => process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
+import { databaseUrl } from './database-url';
+export { databaseUrl };
 
 export function missingConfig(): string[] {
   const missing: string[] = [];

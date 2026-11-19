@@ -1,7 +1,8 @@
 // Vercel build: apply migrations + idempotent seed when a database is configured, then build Next.js.
 import { execSync } from 'node:child_process';
+import { databaseUrl } from '../src/lib/database-url.ts';
 const run = (cmd: string) => execSync(cmd, { stdio: 'inherit' });
-if (process.env.DATABASE_URL || process.env.POSTGRES_URL) {
+if (databaseUrl()) {
   run('node scripts/migrate.ts');
   run('node scripts/seed.ts');
 } else {
