@@ -10,6 +10,9 @@ Three Vercel projects from this one repository, each with its own **Root Directo
 
 The web app rewrites `/api/*` to the API project (`apps/web/vercel.json`), so the browser only ever talks to the web domain. That keeps the `SameSite=Strict` refresh cookie working and needs no CORS. If the API URL changes, update that rewrite.
 
+## Web project build settings
+Framework preset **Angular**, Output Directory **`dist/web`** (the default). `ng build` writes `index.html` directly into `dist/web` (`outputPath.browser = ""`), so the site root isn't empty.
+
 ## 1. Database: Neon
 API project → **Storage** → **Create Database** → **Neon** → connect to all environments. This sets `DATABASE_URL`, and the API build then runs migrations + the idempotent seed (`npm run vercel-build`).
 

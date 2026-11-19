@@ -5,7 +5,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = fileURLToPath(new URL('../dist/web/browser/', import.meta.url));
+const root = fileURLToPath(new URL('../dist/web/', import.meta.url));
 const port = Number(process.env.PORT ?? 4200);
 const api = new URL(process.env.API_URL ?? 'http://localhost:3000');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.ico': 'image/x-icon', '.svg': 'image/svg+xml', '.txt': 'text/plain' };
