@@ -200,7 +200,12 @@ describe('learner journey', () => {
     const r1 = await call(refresh.POST, { method: 'POST', cookie });
     expect(r1.status).toBe(200);
     const newCookie = r1.setCookie!.split(';')[0];
-    // reusing the old (rotated) refresh token is rejected and revokes the family
+    // within the grace window, the just-rotated token still works (interrupted refresh / two tabs)
+    const grace = await call(refresh.POST, { method: 'POST', cookie });
+    expect(grace.status).toBe(200);
+    // after the grace window, reusing it is treated as theft and revokes every session
+    const { pool } = await import('@/lib/db');
+    await pool().query(`UPDATE refresh_tokens SET rotated_at = rotated_at - interval '5 minutes' WHERE rotated_at IS NOT NULL`);
     expect((await call(refresh.POST, { method: 'POST', cookie })).status).toBe(401);
     expect((await call(refresh.POST, { method: 'POST', cookie: newCookie })).status).toBe(401);
     await call(logout.POST, { method: 'POST', cookie: newCookie });

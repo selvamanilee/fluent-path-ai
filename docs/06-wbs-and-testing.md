@@ -1,21 +1,21 @@
 # Implementation WBS, Testing Strategy & Checklist
 
-## WBS
+## WBS — status after first delivery
 
 | Phase | Deliverables | Status |
 |---|---|---|
-| 1 Setup & design system | Monorepo, docs, tokens (light/dark), icon set, compose file | ✅ |
-| 2 Auth, onboarding, profile | Register/login/refresh/logout, onboarding wizard, settings | ✅ |
-| 3 Dashboard & navigation | Shell (bottom bar / side rail), dashboard widgets | ✅ |
-| 4 Daily learning engine | Plan generation, 10 activities, one-at-a-time player, pause/resume | ✅ |
-| 5 Read / Write / Speak / Lesson | Module hubs + exercises + evaluation | ✅ (seed content Level 1–2) |
-| 6 Vocabulary, pronunciation, revision | 27 categories, word cards, TTS, SRS queue | ✅ |
-| 7 Technical English | Scenarios with 5-question structure, locked on Day 1 / Level 1 | ✅ |
-| 8 Assessment engine | 4 × 100-mark exams, randomization, reports, history, 75% rule | ✅ |
-| 9 Agent orchestration | LangGraph orchestrator, 9 specialists, provider abstraction, fallback | ✅ |
-| 10 Persistence & progress | Skill scores, mistakes, streaks, achievements, progress page | ✅ |
-| 11 PWA & iOS | Manifest, ngsw, offline page, iOS meta + safe areas, install guide, update banner | ✅ (real-device testing pending) |
-| 12 Security, tests, deploy | Rate limit, headers, unit/integration/e2e, Dockerfiles | ✅ (partial — see gaps) |
+| 1 Setup & design system | Monorepo, docs, tokens (light/dark), inline icon set | ✅ Done |
+| 2 Auth, onboarding, profile | Register/login, rotating refresh tokens, 5-step onboarding with spec defaults, settings | ✅ Done |
+| 3 Dashboard & navigation | Bottom tab bar (mobile) / side rail (desktop), all dashboard widgets | ✅ Done |
+| 4 Daily learning engine | 10-activity ~30 min plan, one at a time, pause/resume, no repeat of learned words, remedial grammar from weak areas | ✅ Done |
+| 5 Read / Write / Speak / Lesson | Independent hubs + daily renderers; 42-topic 5-stage syllabus | ✅ Done (12 seed lessons; rest AI-generated on demand) |
+| 6 Vocabulary, pronunciation, revision | 28 categories / 177 words with Tamil; listen→spell→meaning→sentence; SRS 0/1/3/7/14 days | ✅ Done (pronunciation = guidance only, no audio scoring) |
+| 7 Technical English | Level-1 job patterns from Day 2, scenarios unlock at Level 2/3 | ✅ Done (3 seed scenarios) |
+| 8 Assessment engine | 4 × 100-mark randomized exams, reports, history, 75% rule across all four | ✅ Done |
+| 9 Agent orchestration | LangGraph orchestrator, 9 specialists, validation, retry, fallback, chat checkpoints | ✅ Done (not yet exercised against a live Ollama model) |
+| 10 Persistence & progress | Skill scores, mistakes, streaks, achievements, progress page | ✅ Done |
+| 11 PWA & iOS | Manifest, icons, ngsw, offline page, update banner, safe areas, install guide | ✅ Done; real-device iOS testing still to do |
+| 12 Security, tests, deploy | Rate limits, headers, validation, account deletion; 33 API + 15 agent + 13 e2e tests; Dockerfiles | 🟡 Partial: Docker images unbuilt, no CI pipeline, no axe-core audit yet |
 
 ## Testing strategy
 

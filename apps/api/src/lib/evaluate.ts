@@ -62,7 +62,7 @@ function matchCase(src: string, repl: string) {
 interface Rule { re: RegExp; fix: (m: RegExpExecArray) => string; category: string; explanation: string; explanation_ta: string }
 
 const RULES: Rule[] = [
-  { re: /^myself\s+([a-z]+)/gi, fix: m => `My name is ${m[1][0].toUpperCase()}${m[1].slice(1)}`, category: 'introduction', explanation: '"Myself Ravi" is not natural English. Say "My name is Ravi" or "I am Ravi".', explanation_ta: '"Myself Ravi" தவறு. "My name is Ravi" அல்லது "I am Ravi" என்று சொல்லவும்.' },
+  { re: /^myself\s+([a-z]+)/gi, fix: m => `My name is ${m[1][0].toUpperCase()}${m[1].slice(1)}`, category: 'introduction', explanation: '"Myself + name" is not natural English. Say "My name is …" or "I am …".', explanation_ta: '"Myself + பெயர்" என்பது தவறு. "My name is …" அல்லது "I am …" என்று சொல்லவும்.' },
   { re: /\bi\s+(is|are)\b/gi, fix: m => matchCase(m[0], 'I am'), category: 'be-verb', explanation: '"I" always takes "am".', explanation_ta: '"I" உடன் எப்போதும் "am".' },
   { re: /\b(he|she|it)\s+(are|am)\b/gi, fix: m => `${m[1]} is`, category: 'be-verb', explanation: 'He / She / It take "is".', explanation_ta: 'He / She / It உடன் "is".' },
   { re: /\b(you|we|they)\s+(is|am)\b/gi, fix: m => `${m[1]} are`, category: 'be-verb', explanation: 'You / We / They take "are".', explanation_ta: 'You / We / They உடன் "are".' },
@@ -135,12 +135,12 @@ export function rulesEvaluate(task: OpenTask): Evaluation {
     if (r.corrections.length) {
       const main = r.corrections.find(c => !MINOR.has(c.category)) ?? r.corrections[0];
       corrections.push({ ...main, original: s, corrected: r.corrected, explanation: r.corrections.map(c => c.explanation).filter((v, i, a) => a.indexOf(v) === i).join(' ') });
-      for (const c of r.corrections) if (c !== main && !MINOR.has(c.category)) corrections.push({ ...c, original: s, corrected: r.corrected });
     }
     fixed.push(r.corrected);
   }
-  const major = corrections.filter(c => !MINOR.has(c.category)).length;
-  const minor = corrections.length - major;
+  const all = sentences.flatMap(x => checkSentence(x).corrections);
+  const major = all.filter(c => !MINOR.has(c.category)).length;
+  const minor = all.length - major;
   const words = text.split(/\s+/).filter(Boolean).length;
   const minS = task.minSentences ?? 1;
   const kws = (task.keywords ?? []).map(k => k.toLowerCase());

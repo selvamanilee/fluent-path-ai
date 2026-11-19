@@ -4,7 +4,7 @@ import { one } from '@/lib/db';
 import { ApiError } from '@/lib/errors';
 import { rotateRefresh, signAccess, refreshCookie, REFRESH_COOKIE } from '@/lib/auth';
 
-export const POST = route({ auth: false, limit: 'auth' }, async ({ req }) => {
+export const POST = route({ auth: false, limit: 'default' }, async ({ req }) => {
   const token = req.cookies.get(REFRESH_COOKIE)?.value;
   const rotated = token ? await rotateRefresh(token) : null;
   if (!rotated) {

@@ -38,17 +38,27 @@ export async function issueRefresh(userId: string): Promise<string> {
   return token;
 }
 
-/** Rotates a refresh token. Returns the user id + new token, or null if invalid. Reuse of a revoked token revokes the whole family. */
+export const ROTATION_GRACE_SEC = 30;
+
+/**
+ * Rotates a refresh token. Returns the user id + new token, or null if invalid.
+ * A token rotated less than ROTATION_GRACE_SEC ago may be presented again (the browser never received
+ * the replacement because navigation aborted the response, or two tabs refreshed together).
+ * Any other reuse of a revoked token is treated as theft and revokes every session of that user.
+ */
 export async function rotateRefresh(token: string): Promise<{ userId: string; token: string } | null> {
-  const row = await one<{ id: string; user_id: string; revoked_at: Date | null; expires_at: Date }>(
-    'SELECT id, user_id, revoked_at, expires_at FROM refresh_tokens WHERE token_hash=$1', [sha(token)]);
+  const row = await one<{ id: string; user_id: string; revoked_at: Date | null; rotated_at: Date | null; expires_at: Date }>(
+    'SELECT id, user_id, revoked_at, rotated_at, expires_at FROM refresh_tokens WHERE token_hash=$1', [sha(token)]);
   if (!row) return null;
+  if (row.expires_at.getTime() < Date.now()) return null;
   if (row.revoked_at) {
+    const inGrace = row.rotated_at && Date.now() - row.rotated_at.getTime() < ROTATION_GRACE_SEC * 1000;
+    if (inGrace) return { userId: row.user_id, token: await issueRefresh(row.user_id) };
     await q('UPDATE refresh_tokens SET revoked_at=now() WHERE user_id=$1 AND revoked_at IS NULL', [row.user_id]);
     return null;
   }
-  if (row.expires_at.getTime() < Date.now()) return null;
-  await q('UPDATE refresh_tokens SET revoked_at=now() WHERE id=$1', [row.id]);
+  const upd = await q('UPDATE refresh_tokens SET revoked_at=now(), rotated_at=now() WHERE id=$1 AND revoked_at IS NULL RETURNING id', [row.id]);
+  if (!upd.length) return rotateRefresh(token); // concurrent rotation: falls into the grace path
   return { userId: row.user_id, token: await issueRefresh(row.user_id) };
 }
 

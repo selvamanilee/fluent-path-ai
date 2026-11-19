@@ -1,6 +1,8 @@
 // Fixed-window in-memory limiter. Suitable for a single instance; use Redis for horizontal scaling.
 const buckets = new Map<string, { count: number; reset: number }>();
-export const LIMITS = { auth: 10, ai: 30, default: 120 } as const;
+const env = (k: string, d: number) => Number(process.env[k] ?? d) || d;
+// Per minute. auth = login/register per IP; ai = evaluation calls per user; default = everything else.
+export const LIMITS = { auth: env('RATE_LIMIT_AUTH', 10), ai: env('RATE_LIMIT_AI', 30), default: env('RATE_LIMIT_DEFAULT', 120) } as const;
 export type LimitKind = keyof typeof LIMITS;
 
 export function hit(key: string, kind: LimitKind, now = Date.now()): { ok: boolean; retryAfter: number } {
