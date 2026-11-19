@@ -9,7 +9,13 @@ export function pool(): pg.Pool {
   if (!globalThis.__fpPool) {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) throw new Error('DATABASE_URL is not set');
-    globalThis.__fpPool = new pg.Pool({ connectionString, max: 10, idleTimeoutMillis: 30_000 });
+    globalThis.__fpPool = new pg.Pool({
+      connectionString,
+      // Serverless functions each hold their own pool: keep it small (use a pooled/PgBouncer URL in production).
+      max: Number(process.env.PG_POOL_MAX ?? (process.env.VERCEL ? 3 : 10)),
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
+    });
   }
   return globalThis.__fpPool;
 }
