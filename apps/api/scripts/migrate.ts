@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dir = join(dirname(fileURLToPath(import.meta.url)), '../../../db/migrations');
-const url = process.env.DATABASE_URL;
+const url = (process.env.DATABASE_URL || process.env.POSTGRES_URL);
 if (!url) { console.error('DATABASE_URL is not set'); process.exit(1); }
 const client = new pg.Client({ connectionString: url });
 await client.connect();

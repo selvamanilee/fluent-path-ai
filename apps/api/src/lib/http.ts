@@ -3,11 +3,12 @@ import { z, ZodError, ZodType } from 'zod';
 import { ApiError, badRequest } from './errors';
 import { verifyAccess } from './auth';
 import { hit, LimitKind } from './ratelimit';
+import { assertConfigured } from './config';
 
 export interface Ctx<P = Record<string, string>> { req: NextRequest; userId: string; params: P; ip: string }
 
 type Handler<P> = (ctx: Ctx<P>) => Promise<unknown>;
-interface Opts { auth?: boolean; limit?: LimitKind }
+interface Opts { auth?: boolean; limit?: LimitKind; requiresSetup?: boolean }
 
 export function json(data: unknown, init?: ResponseInit) {
   return NextResponse.json({ data }, init);
@@ -30,6 +31,7 @@ export function route<P = Record<string, string>>(opts: Opts, fn: Handler<P>) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'local';
     let userId = '';
     try {
+      if (opts.requiresSetup !== false) assertConfigured();
       if (opts.auth !== false) {
         const h = req.headers.get('authorization') ?? '';
         const token = h.startsWith('Bearer ') ? h.slice(7) : '';

@@ -1,5 +1,7 @@
 # Deploying on Vercel
 
+> **Start here for a step-by-step free-tier setup: [10-free-tier-setup.md](10-free-tier-setup.md).**
+
 Three Vercel projects from this one repository, each with its own **Root Directory**:
 
 | Project | Root Directory | URL |

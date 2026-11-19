@@ -72,3 +72,19 @@ describe('misc', () => {
     expect(splitSyllables('meeting').length).toBeGreaterThan(1);
   });
 });
+
+describe('configuration check', async () => {
+  const { missingConfig, assertConfigured } = await import('@/lib/config');
+  it('names missing settings and fails with 503 NOT_CONFIGURED', () => {
+    const saved = { d: process.env.DATABASE_URL, p: process.env.POSTGRES_URL, j: process.env.JWT_SECRET };
+    delete process.env.DATABASE_URL; delete process.env.POSTGRES_URL; process.env.JWT_SECRET = 'short';
+    try {
+      expect(missingConfig()).toEqual(['DATABASE_URL', 'JWT_SECRET (32+ characters)']);
+      expect(() => assertConfigured()).toThrow(/missing: DATABASE_URL/);
+      process.env.POSTGRES_URL = 'postgres://x';
+      expect(missingConfig()).toEqual(['JWT_SECRET (32+ characters)']);
+    } finally {
+      process.env.DATABASE_URL = saved.d; if (saved.p === undefined) delete process.env.POSTGRES_URL; else process.env.POSTGRES_URL = saved.p; process.env.JWT_SECRET = saved.j;
+    }
+  });
+});
