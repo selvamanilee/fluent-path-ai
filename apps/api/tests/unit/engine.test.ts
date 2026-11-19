@@ -88,3 +88,14 @@ describe('configuration check', async () => {
     }
   });
 });
+
+describe('database URL discovery', async () => {
+  const { databaseUrl } = await import('@/lib/database-url');
+  it('accepts DATABASE_URL, POSTGRES_URL, and integration prefixes such as PROD_', () => {
+    expect(databaseUrl({ DATABASE_URL: 'a', POSTGRES_URL: 'b' })).toBe('a');
+    expect(databaseUrl({ POSTGRES_URL: 'b' })).toBe('b');
+    expect(databaseUrl({ PROD_DATABASE_URL_UNPOOLED: 'u', PROD_DATABASE_URL: 'p', PROD_POSTGRES_URL: 'q' })).toBe('p');
+    expect(databaseUrl({ PROD_POSTGRES_URL: 'q' })).toBe('q');
+    expect(databaseUrl({ PROD_DATABASE_URL: '' })).toBe('');
+  });
+});

@@ -1,11 +1,12 @@
 // Idempotent seed of reviewed (source='seed') curriculum content.
 import pg from 'pg';
+import { databaseUrl } from '../src/lib/database-url.ts';
 import { categories } from '../src/seed/vocabulary.ts';
 import { phrases, phrasalVerbs } from '../src/seed/phrases.ts';
 import { topics, lessons } from '../src/seed/grammar.ts';
 import { levels, achievements, reading, writing, speaking, technical, examBank, plans } from '../src/seed/exercises.ts';
 
-const client = new pg.Client({ connectionString: (process.env.DATABASE_URL || process.env.POSTGRES_URL) });
+const client = new pg.Client({ connectionString: databaseUrl() });
 await client.connect();
 const run = (sql: string, params: unknown[] = []) => client.query(sql, params as any[]);
 const J = JSON.stringify;
