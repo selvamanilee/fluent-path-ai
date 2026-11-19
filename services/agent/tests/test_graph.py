@@ -132,3 +132,12 @@ def test_groq_provider_from_env(monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "x")
     p = provider_from_env()
     assert isinstance(p, OpenAICompatibleProvider) and p.base_url == "https://api.groq.com/openai/v1" and p.ready()
+
+
+def test_deployed_agent_without_token_refuses_requests(monkeypatch):
+    monkeypatch.delenv("AGENT_SERVICE_TOKEN", raising=False)
+    monkeypatch.setenv("VERCEL", "1")
+    c = TestClient(create_app(NullProvider()))
+    assert c.post("/v1/next-activity", json={}).status_code == 503
+    h = c.get("/health").json()
+    assert h["config"]["service_token_set"] is False and "GROQ" not in str(h).upper().replace("GROQ_KEY_SET", "")
