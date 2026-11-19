@@ -22,15 +22,23 @@ def create_app(provider: Provider | None = None) -> FastAPI:
     token = os.getenv("AGENT_SERVICE_TOKEN", "")
     app = FastAPI(title="FluentPath AI Agent", version="0.1.0")
 
+    # Outside local development the agent must never be callable without the shared token.
+    deployed = bool(os.getenv("VERCEL")) or os.getenv("ENV") == "production"
+
     def auth(authorization: str = Header(default="")):
         if not token:
+            if deployed:
+                raise HTTPException(status_code=503, detail="AGENT_SERVICE_TOKEN is not configured")
             return  # local development without a token
         if not hmac.compare_digest(authorization, f"Bearer {token}"):
             raise HTTPException(status_code=401, detail="unauthorized")
 
     @app.get("/health")
     def health():
-        return {"ok": True, "provider": provider.name, "model": provider.model, "model_ready": provider.ready()}
+        # Booleans only — never return secret values.
+        config = {"model_provider": os.getenv("MODEL_PROVIDER", "ollama"), "service_token_set": bool(token),
+                  "groq_key_set": bool(os.getenv("GROQ_API_KEY")), "openai_key_set": bool(os.getenv("OPENAI_API_KEY"))}
+        return {"ok": True, "provider": provider.name, "model": provider.model, "model_ready": provider.ready(), "config": config}
 
     @app.post("/v1/evaluate", dependencies=[Depends(auth)])
     def evaluate(req: EvaluateRequest):
