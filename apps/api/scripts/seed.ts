@@ -5,7 +5,7 @@ import { phrases, phrasalVerbs } from '../src/seed/phrases.ts';
 import { topics, lessons } from '../src/seed/grammar.ts';
 import { levels, achievements, reading, writing, speaking, technical, examBank, plans } from '../src/seed/exercises.ts';
 
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+const client = new pg.Client({ connectionString: (process.env.DATABASE_URL || process.env.POSTGRES_URL) });
 await client.connect();
 const run = (sql: string, params: unknown[] = []) => client.query(sql, params as any[]);
 const J = JSON.stringify;

@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { databaseUrl } from './config';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -7,7 +8,7 @@ declare global {
 
 export function pool(): pg.Pool {
   if (!globalThis.__fpPool) {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = databaseUrl();
     if (!connectionString) throw new Error('DATABASE_URL is not set');
     globalThis.__fpPool = new pg.Pool({
       connectionString,

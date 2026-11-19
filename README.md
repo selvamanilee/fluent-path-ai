@@ -11,7 +11,7 @@ A personalized English coach for Tamil-speaking learners, taking them from absol
 | Agent engine | `services/agent` | Python, FastAPI, LangGraph orchestrator, LangChain (Ollama) |
 | Database | `db/migrations` | PostgreSQL 16 |
 
-Design docs: [architecture](docs/01-architecture.md) · [data model / ER](docs/02-data-model.md) · [frontend & screens](docs/03-frontend-structure.md) · [API](docs/04-api-spec.md) · [agents](docs/05-agent-design.md) · [WBS, testing & status](docs/06-wbs-and-testing.md) · [iOS checklist](docs/07-ios-checklist.md) · [deployment](docs/08-deployment.md) · [Vercel](docs/09-vercel.md)
+Design docs: [architecture](docs/01-architecture.md) · [data model / ER](docs/02-data-model.md) · [frontend & screens](docs/03-frontend-structure.md) · [API](docs/04-api-spec.md) · [agents](docs/05-agent-design.md) · [WBS, testing & status](docs/06-wbs-and-testing.md) · [iOS checklist](docs/07-ios-checklist.md) · [deployment](docs/08-deployment.md) · [Vercel](docs/09-vercel.md) · **[Free-tier setup, step by step](docs/10-free-tier-setup.md)**
 
 ## Run locally
 
