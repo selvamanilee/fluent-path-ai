@@ -122,3 +122,13 @@ def test_service_token_is_enforced(monkeypatch):
     c = TestClient(create_app(NullProvider()))
     assert c.post("/v1/next-activity", json={}).status_code == 401
     assert c.post("/v1/next-activity", json={}, headers={"Authorization": "Bearer s3cret"}).status_code == 200
+
+
+def test_groq_provider_from_env(monkeypatch):
+    from app.providers import provider_from_env, OpenAICompatibleProvider, NullProvider
+    monkeypatch.setenv("MODEL_PROVIDER", "groq")
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    assert isinstance(provider_from_env(), NullProvider)
+    monkeypatch.setenv("GROQ_API_KEY", "x")
+    p = provider_from_env()
+    assert isinstance(p, OpenAICompatibleProvider) and p.base_url == "https://api.groq.com/openai/v1" and p.ready()

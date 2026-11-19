@@ -12,7 +12,8 @@
     "seed": "node scripts/seed.ts",
     "db:reset": "node scripts/migrate.ts --reset && node scripts/seed.ts",
     "test": "vitest run",
-    "test:unit": "vitest run tests/unit"
+    "test:unit": "vitest run tests/unit",
+    "vercel-build": "node scripts/vercel-build.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -29,5 +30,8 @@
     "@types/react": "^19.3.0",
     "typescript": "^5.9.0",
     "vitest": "^5.1.1"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

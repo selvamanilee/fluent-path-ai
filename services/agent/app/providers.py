@@ -58,7 +58,7 @@ class OllamaProvider:
 
 
 class OpenAICompatibleProvider:
-    name = "openai-compatible"
+    name = "openai-compatible"  # OpenAI, Groq, OpenRouter, Together, ...
 
     def __init__(self, base_url: str, model: str, api_key: str, timeout: float = 20.0):
         self.base_url, self.model, self._key, self.timeout = base_url.rstrip("/"), model, api_key, timeout
@@ -88,6 +88,11 @@ def provider_from_env() -> Provider:
         if not key:
             return NullProvider()
         return OpenAICompatibleProvider(os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"), os.getenv("OPENAI_MODEL", "gpt-4o-mini"), key, timeout)
+    if kind == "groq":
+        key = os.getenv("GROQ_API_KEY", "")
+        if not key:
+            return NullProvider()
+        return OpenAICompatibleProvider("https://api.groq.com/openai/v1", os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"), key, timeout)
     return NullProvider()
 
 
